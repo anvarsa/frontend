@@ -1,6 +1,6 @@
-async function getProducts() {
+async function getNews() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/products`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/api/articles`, {
       cache: 'no-store',
     });
     if (!res.ok) return [];
@@ -13,56 +13,92 @@ async function getProducts() {
 }
 
 export default async function Home() {
-  const products = await getProducts();
+  const articles = await getNews();
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Sarlavha qismi */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-            Uzgo.uz Avto-Chexollar
+    <div className="min-h-screen bg-slate-900 text-white font-sans">
+      {/* Header / Navbar */}
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-black tracking-wider text-sky-400">UZGO<span className="text-white">.UZ</span></span>
+          </div>
+          <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-300">
+            <a href="#latest" className="hover:text-sky-400 transition">So'nggi yangiliklar</a>
+            <a href="#categories" className="hover:text-sky-400 transition">Bo'limlar</a>
+            <a href="#trending" className="hover:text-sky-400 transition">Muhim</a>
+            <a href="#contact" className="hover:text-sky-400 transition">Aloqa</a>
+          </nav>
+          <div>
+            <span className="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/20 px-3 py-1.5 rounded-full font-semibold">
+              Live 24/7
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20 lg:py-28 bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <span className="inline-block bg-sky-500/10 text-sky-400 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-widest mb-6 border border-sky-500/20">
+            Axborot-tahliliy portal
+          </span>
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight">
+            Kun muhim voqealari va <span className="text-sky-400">ishonchli xabarlar</span>
           </h1>
-          <p className="mt-3 text-lg text-gray-600">
-            Strapi va Next.js orqali ulangan maxsus mahsulotlar katalogi
+          <p className="mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto">
+            Dunyodagi va yurtimizdagi eng so'nggi yangiliklar, eksklyuziv maqolalar hamda tahlillar bizning portalda.
           </p>
         </div>
+      </section>
 
-        {/* Mahsulotlar ro'yxati */}
-        {products.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <p className="text-gray-500 text-lg">Hozircha mahsulotlar topilmadi yoki Strapi bilan bog'lanishda muammo bor.</p>
-            <p className="text-sm text-gray-400 mt-2">Strapi Admin panelidan Public ruxsatlarini va mahsulotlar qo'shilganini tekshiring.</p>
+      {/* News Grid Section */}
+      <section id="latest" className="py-20 bg-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white border-l-4 border-sky-400 pl-4">So'nggi Yangiliklar</h2>
+            <span className="text-sm text-slate-400">Strapi API orqali yangilanadi</span>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product: any) => {
-              // Strapi strukturangizga qarab (masalan: title, price) o'zgarishi mumkin
-              const title = product.attributes?.title || product.title || "Nomsiz mahsulot";
-              const price = product.attributes?.price || product.price || "Narxi belgilanmagan";
 
-              return (
-                <div 
-                  key={product.id} 
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col"
-                >
-                  <div className="h-48 bg-gray-100 flex items-center justify-center text-gray-400">
-                    {/* Rasm joyi */}
-                    <span>Rasm</span>
+          {articles.length === 0 ? (
+            <div className="text-center py-20 bg-slate-900 rounded-2xl border border-slate-800">
+              <p className="text-slate-400 text-lg">Hozircha yangiliklar qo'shilmagan.</p>
+              <p className="text-sm text-slate-500 mt-2">Strapi Admin panelidan maqolalar (articles) qo'shib tekshirib ko'ring.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {articles.map((item: any) => {
+                const title = item.attributes?.title || item.title || "Sarlavha mavjud emas";
+                const description = item.attributes?.description || item.description || "Tavsif yozilmagan";
+
+                return (
+                  <div key={item.id} className="bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex flex-col hover:border-slate-700 transition">
+                    <div className="h-48 bg-slate-800 flex items-center justify-center text-slate-600 font-medium">
+                      Rasm (Cloudflare R2)
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <span className="text-xs text-sky-400 font-semibold mb-2 uppercase tracking-wider">Yangilik</span>
+                      <h3 className="text-xl font-bold text-white mb-3 leading-snug">{title}</h3>
+                      <p className="text-slate-400 text-sm mb-6 flex-grow">{description}</p>
+                      <button className="w-full bg-slate-800 hover:bg-slate-700 text-sky-400 font-semibold py-2.5 rounded-xl transition border border-slate-700">
+                        To'liq o'qish
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-5 flex flex-col flex-grow">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2">{title}</h2>
-                    <p className="text-indigo-600 font-bold mb-4">{price} so'm</p>
-                    <button className="mt-auto w-full bg-indigo-600 text-white py-2 px-4 rounded-xl font-medium hover:bg-indigo-700 transition-colors">
-                      Batafsil
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-    </main>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer id="contact" className="border-t border-slate-800 bg-slate-900 py-12 text-center text-slate-500 text-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-lg font-bold text-white mb-2">UZGO.UZ — Axborot Portali</p>
+          <p>© 2026 Barcha huquqlar himoyalangan.</p>
+        </div>
+      </footer>
+    </div>
   );
 }
